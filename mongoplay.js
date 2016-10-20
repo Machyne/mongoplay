@@ -18,13 +18,15 @@
     delete global.go;
     delete global.take;
     delete global.use;
-    delete global.here;
     delete global.inv;
     delete global.me;
+    delete global.here;
+    delete global.info;
     let dir;
     for (dir of _directions) {
       delete global[dir];
     }
+    db.getMongo().promptPrefix = _game.oldPromptPrefix;
     return msg + '\n\nMongoPlay deactivated.';
   };
 
@@ -166,13 +168,14 @@
   };
 
   const _usage = 'Usage: `play(level, [characterName])`\n';
-  const _intro = '\nWelcome to MongoPlay!\n---------------------\n\n' +
+  const _intro = '\n🎉 Welcome to MongoPlay!\n-----------------------\n\n' +
     'To go directions, type `go(<direction>)` or simply `<direction>`.\n' +
     'To pick up items in the room, type `take(\'<item>\')`.\n' +
     'To use items, type `use(\'<item>\')`.\n' +
     'To view all of your items, type `inv`.\n' +
     'To view your current player info, type `me`.\n' +
     'To display the current room info, type `here`.\n\n' +
+    'To repeat this message, type `info`.\n\n' +
     'Have fun! 😜\n\n~~~~~~~\n\n';
 
   let global = Function('return this')();
@@ -192,11 +195,6 @@
       };
     }
 
-    global.here = {
-      shellPrint: () => {
-        return _printRoom();
-      }
-    };
     global.inv = {
       shellPrint: () => {
         return _printInventory();
@@ -207,6 +205,18 @@
         return _printPlayer();
       }
     };
+    global.here = {
+      shellPrint: () => {
+        return _printRoom();
+      }
+    };
+    global.info = {
+      shellPrint: () => {
+        return _intro;
+      }
+    };
+    _game.oldPromptPrefix = db.getMongo().promptPrefix;
+    db.getMongo().promptPrefix = '\nMP🛡 ';
   }
 
   const overwrite = function(saveName) {
