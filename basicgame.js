@@ -22,7 +22,7 @@ let r1 = {
 
 let r2 = {
   _id: 2,
-  desc: "this is r2",
+  desc: "this is r2. Try using a torch!",
   north: {
     desc: 'path2 to n',
     ref: 1,
@@ -38,6 +38,12 @@ let r2 = {
   west: {
     desc: 'path2 to w',
     ref: 3,
+  },
+  actions: {
+    torch: function (hp, setHp, items, setItems) {
+        setHp(hp - 1);
+        return 'You burned yourself. You lose one hp.';
+    }
   },
 };
 
@@ -55,9 +61,23 @@ let r3 = {
     plate: {
       desc: 'probably ceramic'
     },
+    banana: {
+      desc: 'i bet it tastes delicious',
+      use: function (hp, setHp, items, setItems) {
+        if (typeof items.plate === 'object') {
+          delete items.plate;
+        } else {
+          delete items.banana;
+        }
+        setItems(items);
+        setHp(hp + 7);
+        return "tasty! you feel much better"
+      },
+    },
   }
 };
 
+db.level1.drop()
 db.level1.insert(r1);
 db.level1.insert(r2);
 db.level1.insert(r3);

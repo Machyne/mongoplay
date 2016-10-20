@@ -13,6 +13,37 @@
 
   let _game = {};
 
+  const _softExit = (msg) => {
+    _game.col.drop();
+    delete global.go;
+    delete global.take;
+    delete global.use;
+    delete global.here;
+    delete global.inv;
+    delete global.me;
+    let dir;
+    for (dir of _directions) {
+      delete global[dir];
+    }
+    return msg + '\n\nMongoPlay deactivated.';
+  };
+
+  const _codeToFn = (code) => {
+    return eval('(' + code.code + ')');
+  }
+
+  const _checkPlayer = (text, cb) => {
+    if (_player.hp <= 0) {
+      text += '\n\n';
+      text += '👻 🚨 👻 🚨 👻 🚨 👻 🚨 👻\n';
+      text += ' ~~ GAME OVER ~~\n';
+      text += '👻 🚨 👻 🚨 👻 🚨 👻 🚨 👻\n';
+      text += '\nsave file deleted.\n';
+      return _softExit(text);
+    }
+    return text + cb();
+  };
+
   const _printPlayer = () => {
     return '⚔  ' + _player.name + ' ⚔ ' + '❤️ '.repeat(_player.hp);
   };
@@ -53,7 +84,10 @@
     let room = _game.col.findOne({
       _id: oid
     });
-    assert(room);
+    if (!room) {
+      return _softExit('🔥 Error: invalid room reference! ' +
+        'Destroying everything...');
+    }
     _game.room = room;
     _player.room = oid;
     _game.col.save(_player);
@@ -64,7 +98,9 @@
     let h = _game.col.findOne({
       isHome: true
     });
-    assert(h);
+    if (!h) {
+      return _softExit('🔥 Error: invalid game level -- no starting point.')
+    }
     return _goto(h._id);
   };
 
@@ -104,7 +140,29 @@
     if (typeof _player.items[item] !== 'object') {
       return '...you don\'t have any ' + item + '. 😅';
     }
-    return 'TODO use not yet implemented.';
+    let action = false;
+    if (typeof _game.room.actions === 'object' &&
+      typeof _game.room.actions[item] == 'object' &&
+      _game.room.actions[item].constructor == Code) {
+      action = _codeToFn(_game.room.actions[item]);
+    } else if (typeof _player.items[item].use == 'object' &&
+      _player.items[item].use.constructor == Code) {
+      action = _codeToFn(_player.items[item].use);
+    }
+    if (!action) {
+      return 'There\'s nothing to be done with that now. 😕'
+    }
+    let result = action(
+      _player.hp, (hp) => {
+        _player.hp = hp
+      }, _player.items, (items) => {
+        _player.items = items
+      }
+    );
+    _game.col.save(_player);
+    return _checkPlayer(result, () => {
+      return '\n\n' + _goto(_player.room)
+    });
   };
 
   const _usage = 'Usage: `play(level, [characterName])`\n';
