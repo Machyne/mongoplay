@@ -42,6 +42,12 @@
       text += '👻 🚨 👻 🚨 👻 🚨 👻 🚨 👻\n';
       text += '\nsave file deleted.\n';
       return _softExit(text);
+    } else if (_player.victory === true) {
+      text += '\n\n';
+      text += '🎉 🎊 🌟 🎆 🌟 🎊 🎉\n';
+      text += ' ~ YOU WIN ~\n';
+      text += '🎉 🎊 🌟 🎆 🌟 🎊 🎉\n';
+      return _softExit(text);
     }
     return text + cb();
   };
@@ -155,10 +161,17 @@
       return 'There\'s nothing to be done with that now. 😕'
     }
     let result = action(
-      _player.hp, (hp) => {
+      _player.hp,
+      (hp) => {
         _player.hp = hp
-      }, _player.items, (items) => {
+      }, _player.items,
+      (items) => {
         _player.items = items
+      },
+      (didWin) => {
+        if (didWin) {
+          _player.victory = true;
+        }
       }
     );
     _game.col.save(_player);
