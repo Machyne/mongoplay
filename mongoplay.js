@@ -22,7 +22,7 @@
     let it;
     for (it in _player.items) {
       if (_player.items.hasOwnProperty(it)) {
-        inv += '\n\t‣ ' + it + ' (' + _player.items[it] + ')';
+        inv += '\n\t‣ ' + it + ' (' + _player.items[it].desc + ')';
       }
     }
     return inv;
@@ -42,7 +42,7 @@
       roomstr += '\nObjects:'
       for (let it in _game.room.items) {
         if (_game.room.items.hasOwnProperty(it)) {
-          roomstr += '\n\t' + it + ': ' + _game.room.items[it];
+          roomstr += '\n\t' + it + ': ' + _game.room.items[it].desc;
         }
       }
     }
@@ -84,7 +84,10 @@
   };
 
   const take = (item) => {
-    if (typeof _game.room.items[item] !== 'string') {
+    if (typeof _game.room.items !== 'object') {
+      return '🔥 Error: there are no items here.';
+    }
+    if (typeof _game.room.items[item] !== 'object') {
       return '🔥 Error: there is no ' + item + ' here.';
     }
     _player.items[item] = _game.room.items[item];
@@ -98,7 +101,7 @@
   };
 
   const use = (item) => {
-    if (typeof _player.items[item] !== 'string') {
+    if (typeof _player.items[item] !== 'object') {
       return '...you don\'t have any ' + item + '. 😅';
     }
     return 'TODO use not yet implemented.';

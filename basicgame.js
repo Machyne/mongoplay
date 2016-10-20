@@ -49,8 +49,12 @@ let r3 = {
     ref: 1,
   },
   items: {
-    torch: 'a small embodiment of the sun',
-    plate: 'probably ceramic',
+    torch: {
+      desc: 'a small embodiment of the sun'
+    },
+    plate: {
+      desc: 'probably ceramic'
+    },
   }
 };
 
