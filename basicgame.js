@@ -7,7 +7,7 @@ let r1 = {
     ref: 1,
   },
   east: {
-    desc: 'The east wall has a non-copyrigh-infringing orange portal.',
+    desc: 'The east wall has a non-copyright-infringing orange portal.',
     ref: 1,
   },
   south: {
@@ -75,9 +75,9 @@ let r3 = {
         } else {
           delete items.banana;
         }
-        setItems(items);
+        setItems(items)
         setHp(hp + 7);
-        return 'tasty! you feel much better'
+        return 'Tasty! you feel much better'
       },
     },
     plate: {
