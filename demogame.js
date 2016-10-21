@@ -82,7 +82,7 @@ const game = [
     },
   },
   {
-    _id: 'forrest entry',
+    _id: 'forest entry',
     desc: 'You are in a lightly wooded area. You hear a growling in the distance.',
     east: {
       desc: 'deeper into the woods, toward the growling',
@@ -102,7 +102,7 @@ const game = [
     },
     west: {
       desc: 'back toward the clearing',
-      ref: 'forrest entry',
+      ref: 'forest entry',
     },
     actions: {
       'poison': function (hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
