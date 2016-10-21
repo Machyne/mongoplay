@@ -109,4 +109,9 @@ let EVENT_FN = function(hp, setHp, items, setItems, room, setRoom, setLocation, 
 
 ## That's all!
 
+To seed your database with a game that I already made for you, run:
+```
+mongo < demogame.js
+```
+
 Go forth and have fun! 😜
