@@ -126,6 +126,7 @@
       result = '\n' + result + '\n' + _HR + '\n\n';
     }
     _game.col.save(_player);
+    _player = _game.col.findOne({_id: _player._id});
     _game.col.save(_game.room);
 
     return _checkPlayer(result, (function (shouldSkip) {
@@ -190,6 +191,7 @@
     }
     _game.col.save(_game.room);
     _game.col.save(_player);
+    _player = _game.col.findOne({_id: _player._id});
     return _goto(_game.room._id);
   };
 
