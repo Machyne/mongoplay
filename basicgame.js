@@ -1,27 +1,27 @@
 let r1 = {
   _id: 1,
   isHome: true,
-  desc: 'this is r1',
+  desc: 'You are standing in an unremarkable room with a table in the middle.',
   north: {
-    desc: 'path to n',
+    desc: 'On the north wall, there is a glowing blue portal.',
     ref: 1,
   },
   east: {
-    desc: 'path to e',
+    desc: 'The east wall has a non-copyrigh-infringing orange portal.',
     ref: 1,
   },
   south: {
-    desc: 'path to s',
+    desc: 'The south wall has a door.',
     ref: 2,
   },
   west: {
-    desc: 'path to w',
+    desc: 'This is an open-concept home, so you see a room to the west too.',
     ref: 3,
   },
   items: {
     'win berry': {
-      desc: 'sounds suspiciously like a win condition',
-      use: function(hp, setHp, items, setItems, setVictory) {
+      desc: 'An item that sounds suspiciously like a win condition.',
+      use: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
         setVictory(true);
         return 'you eat the berry and win.';
       }
@@ -31,48 +31,41 @@ let r1 = {
 
 let r2 = {
   _id: 2,
-  desc: 'this is r2. Try using a torch!',
+  desc: 'This room is pretty dark. Try using a torch!',
   north: {
-    desc: 'path2 to n',
+    desc: 'Just a door.',
     ref: 1,
   },
   east: {
-    desc: 'path2 to e',
+    desc: 'East of here is a clear self-loop.',
     ref: 2,
   },
-  south: {
-    desc: 'path2 to s',
-    ref: 1,
-  },
   west: {
-    desc: 'path2 to w',
+    desc: 'An opening to the west lets you see another room.',
     ref: 3,
   },
   actions: {
-    torch: function(hp, setHp, items, setItems, setVictory) {
+    torch: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
       setHp(hp - 1);
-      return 'You burned yourself. You lose one hp.';
+      return 'LOL 😂  You don\'t know how to use torches. Lose one hp.';
     }
   },
 };
 
 let r3 = {
   _id: 3,
-  desc: 'this is r3',
+  desc: 'Woooooo it\'s the wild west!!! There\'s a treasure chest here.',
   east: {
-    desc: 'path to e',
+    desc: 'The only exit out of the wild west is the one room to the East.',
     ref: 1,
   },
   items: {
     torch: {
-      desc: 'a small embodiment of the sun'
-    },
-    plate: {
-      desc: 'probably ceramic'
+      desc: '🔥 🔥 🔥 🔥 '
     },
     banana: {
-      desc: 'i bet it tastes delicious',
-      use: function(hp, setHp, items, setItems, setVictory) {
+      desc: 'I bet it tastes delicious!',
+      use: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
         if (typeof items.plate === 'object') {
           delete items.plate;
         } else {
@@ -83,7 +76,16 @@ let r3 = {
         return 'tasty! you feel much better'
       },
     },
-  }
+    plate: {
+      desc: 'Looks tasty?'
+    },
+  },
+  onEnter: function (hp, setHp, items, setItems, room, setRoom, setVictory) {
+    delete room.onEnter;
+    setRoom(room);
+    return 'WEEEEEEEEEEEEEEEEEEEE!!1! welcome to the wild west.\n' +
+      'Enjoy your stay! 🐴';
+  },
 };
 
 db.level1.drop()

@@ -2,6 +2,7 @@
   'use strict';
 
   const _directions = ['north', 'east', 'south', 'west'];
+  const _HR = '〰'.repeat(24) + '\n';
 
   let _player = {
     _id: 'mongoplay_adventurer',
@@ -71,10 +72,10 @@
     let roomstr = 'Room: ' + _game.room.desc + '\n';
 
     roomstr += '\nPaths:'
-    let dir;
-    for (dir of _directions) {
+    for (let dir of _directions) {
       if (typeof _game.room[dir] === 'object') {
-        roomstr += '\n\t' + dir + ': ' + _game.room[dir].desc;
+        roomstr += '\n\t' + (dir.length == 4 ? ' ': '');
+        roomstr += dir + ': ' + _game.room[dir].desc;
       }
     }
     if (typeof _game.room.items === 'object') {
@@ -88,6 +89,38 @@
     return roomstr;
   };
 
+  const _doEvent = (fn) => {
+    let result = fn(
+      _player.hp,
+      (hp) => {
+        _player.hp = hp
+      },
+      _player.items,
+      (items) => {
+        _player.items = items
+      },
+      _game.room,
+      (room) => {
+        _game.room = room
+      },
+      (didWin) => {
+        if (didWin) {
+          _player.victory = true;
+        }
+      }
+    );
+
+    if (result.length > 0) {
+      result = '\n' + result + '\n' + _HR + '\n\n';
+    }
+    _game.col.save(_player);
+    _game.col.save(_game.room);
+
+    return _checkPlayer(result, () => {
+      return _goto(_player.room)
+    });
+  };
+
   const _goto = (oid) => {
     let room = _game.col.findOne({
       _id: oid
@@ -99,7 +132,11 @@
     _game.room = room;
     _player.room = oid;
     _game.col.save(_player);
-    return _printPlayer() + '\n' + _printRoom();
+    if (typeof _game.room.onEnter === 'object' &&
+      _game.room.onEnter.constructor == Code) {
+        return _doEvent(_codeToFn(_game.room.onEnter));
+    }
+    return '\n' + _printPlayer() + '\n' + _printRoom();
   };
 
   const _homeRoom = () => {
@@ -160,24 +197,7 @@
     if (!action) {
       return 'There\'s nothing to be done with that now. 😕'
     }
-    let result = action(
-      _player.hp,
-      (hp) => {
-        _player.hp = hp
-      }, _player.items,
-      (items) => {
-        _player.items = items
-      },
-      (didWin) => {
-        if (didWin) {
-          _player.victory = true;
-        }
-      }
-    );
-    _game.col.save(_player);
-    return _checkPlayer(result, () => {
-      return '\n\n' + _goto(_player.room)
-    });
+    return _doEvent(action);
   };
 
   const _usage = 'Usage: `play(level, [characterName])`\n';
@@ -189,7 +209,7 @@
     'To view your current player info, type `me`.\n' +
     'To display the current room info, type `here`.\n\n' +
     'To repeat this message, type `info`.\n\n' +
-    'Have fun! 😜\n\n~~~~~~~\n\n';
+    'Have fun! 😜\n\n' + _HR + '\n';
 
   let global = Function('return this')();
 
@@ -198,8 +218,7 @@
     global.go = go;
     global.take = take;
     global.use = use;
-    let dir;
-    for (dir of _directions) {
+    for (let dir of _directions) {
       global[dir] = {
         dir,
         shellPrint: (function(d) {
@@ -229,7 +248,7 @@
       }
     };
     _game.oldPromptPrefix = db.getMongo().promptPrefix;
-    db.getMongo().promptPrefix = '\nMP🛡 ';
+    db.getMongo().promptPrefix = '\n' + _HR + 'MP🛡 ';
   }
 
   const overwrite = function(saveName) {
@@ -321,4 +340,6 @@
   };
 
   global.play = play;
+  print('\n⭐️ ⭐️ ⭐️  MONGO PLAY LOADED ⭐️ ⭐️ ⭐️')
+  print('Type `play(\'level\', \'name\')` to start!\n')
 })();
