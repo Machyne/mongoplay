@@ -342,11 +342,7 @@
       _game.col.drop();
       return '🔥 Error: invalid save state. Save file deleted.';
     }
-    for (let k in _player) {
-      if (_player.hasOwnProperty(k)) {
-        _player[k] = p[k];
-      }
-    }
+    _player = p;
 
     _setGlobals();
 
