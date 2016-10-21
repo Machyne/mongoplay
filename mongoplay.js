@@ -69,13 +69,17 @@
   const _printRoom = () => {
     let roomstr = 'Room: ' + _game.room.desc + '\n';
 
-    roomstr += '\nPaths:';
+    let dirs = ''
     for (let dir of _directions) {
       if (typeof _game.room[dir] === 'object') {
-        roomstr += '\n\t' + (dir.length == 4 ? ' ': '');
-        roomstr += dir + ': ' + _game.room[dir].desc;
+        dirs += '\n\t' + (dir.length == 4 ? ' ': '');
+        dirs += dir + ': ' + _game.room[dir].desc;
       }
     }
+    if (dirs.length) {
+      roomstr += '\nPaths:' + dirs;
+    }
+
     if (typeof _game.room.items === 'object') {
       roomstr += '\nObjects:';
       for (let it in _game.room.items) {
@@ -101,6 +105,9 @@
       _game.room,
       (room) => {
         _game.room = room;
+      },
+      (loc) => {
+        _player.room = loc;
       },
       (didWin) => {
         if (didWin) {

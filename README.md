@@ -60,7 +60,7 @@ different room in the game. Here is the full description for a room document:
 What's an event function??
 
 ```js
-let EVENT_FN = function(hp, setHp, items, setItems, room, setRoom, setVictory) {
+let EVENT_FN = function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
   let ret = '';
 
   // hp is the current player's heath.
@@ -86,6 +86,10 @@ let EVENT_FN = function(hp, setHp, items, setItems, room, setRoom, setVictory) {
     delete room.onEnter;
     setRoom(room);
   }
+
+  // setLocation will "teleport" the user to the room with the given _id.
+  setLocation('somewhere else');
+  ret += 'You\'ve been teleported to somewhere else!\n'
 
   // If you call `setVictory(true)`, then the game is over and the player wins.
   if (Math.random() < 0.25) {

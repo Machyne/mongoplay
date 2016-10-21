@@ -21,15 +21,15 @@ let r1 = {
   items: {
     'win berry': {
       desc: 'An item that sounds suspiciously like a win condition.',
-      use: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
+      use: function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
         setVictory(true);
         return 'you eat the berry and win.';
       }
     },
   },
-  onEnter: function (hp, setHp, items, setItems, room, setRoom, setVictory) {
+  onEnter: function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
     // Test no-return functions.
-    setHp(2 * (~~(hp/2)));  // Make HP even.
+    setHp(2 * (~~(hp / 2))); // Make HP even.
   },
 };
 
@@ -49,7 +49,7 @@ let r2 = {
     ref: 3,
   },
   actions: {
-    torch: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
+    torch: function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
       setHp(hp - 1);
       return 'LOL 😂  You don\'t know how to use torches. Lose one hp.';
     }
@@ -69,7 +69,7 @@ let r3 = {
     },
     banana: {
       desc: 'I bet it tastes delicious!',
-      use: function(hp, setHp, items, setItems, room, setRoom, setVictory) {
+      use: function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
         if (typeof items.plate === 'object') {
           delete items.plate;
         } else {
@@ -84,15 +84,14 @@ let r3 = {
       desc: 'Looks tasty?'
     },
   },
-  onEnter: function (hp, setHp, items, setItems, room, setRoom, setVictory) {
+  onEnter: function(hp, setHp, items, setItems, room, setRoom, setLocation, setVictory) {
     delete room.onEnter;
     setRoom(room);
-    return 'WEEEEEEEEEEEEEEEEEEEE!!1! welcome to the wild west.\n' +
-      'Enjoy your stay! 🐴';
+    return 'WEEEEEEEEEEEEEEEEEEEE!!1! welcome to the wild west.\nEnjoy your stay! 🐴';
   },
 };
 
-db.level1.drop()
-db.level1.insert(r1);
-db.level1.insert(r2);
-db.level1.insert(r3);
+db.basic.drop()
+db.basic.insert(r1);
+db.basic.insert(r2);
+db.basic.insert(r3);
