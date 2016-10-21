@@ -75,9 +75,9 @@ let r3 = {
         } else {
           delete items.banana;
         }
-        setItems(items)
+        setItems(items);
         setHp(hp + 7);
-        return 'Tasty! you feel much better'
+        return 'Tasty! you feel much better';
       },
     },
     plate: {
