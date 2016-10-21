@@ -2,14 +2,14 @@ const game = [
   {
     _id: 'home',
     isHome: true,
-    desc: 'You stand in a small clearing. South of you is a small cottage, ahead to the north is a roaring river, to the east there is a forrest.',
+    desc: 'You stand in a small clearing. South of you is a small cottage, ahead to the north is a roaring river, to the east there is a forest.',
     north: {
       desc: 'the river (looks unsafe...)',
       ref: 'river',
     },
     east: {
-      desc: 'forrest',
-      ref: 'forrest entry',
+      desc: 'forest',
+      ref: 'forest entry',
     },
     south: {
       desc: 'cottage',
@@ -55,7 +55,7 @@ const game = [
   },
   {
     _id: 'cottage',
-    desc: 'You are in a very ecclectic cottage. It looks like it could belong to a wizard. The room is in total dissaray, except for the bookshelves which are all tidy, but are missing a book.',
+    desc: 'You are in a very ecclectic cottage. It looks like it could belong to a wizard. The room is in total disarray, except for the bookshelves which are all tidy, but are missing a book.',
     north: {
       desc: 'exit the cottage',
       ref: 'home',
@@ -115,7 +115,7 @@ const game = [
         setRoom(room);
         delete items.poison;
         setItems(items);
-        return 'You give the poison to the bear. It dissapear into the woods.';
+        return 'You give the poison to the bear. It disappear into the woods.';
       },
     },
   },
