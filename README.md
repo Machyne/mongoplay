@@ -4,7 +4,15 @@ MongoPlay
 MongoPlay is a script for the mongo shell that allows you to play through
 text-based adventure games defined in a mongodb collection.
 
-## Usage:
+## Contributing
+
+Want to make a game?? 😀
+
+Want to make MongoPlay better?!
+
+Send me a pull request! 😍
+
+## Usage
 
 To load MongoPlay, just connect to a mongodb deployment with the mongo shell and
 specify the `mongoplay.js` file:
@@ -26,7 +34,7 @@ play.overwrite()
 play.load('levelName', 'playerName');
 ```
 
-## Creating your own game:
+## Creating your own game
 
 A "game" in MongoPlay is just a mongodb collection. Each document specifies a
 different room in the game. Here is the full description for a room document:
@@ -106,6 +114,8 @@ let EVENT_FN = function(hp, setHp, items, setItems, room, setRoom, setLocation, 
   return ret;
 };
 ```
+
+See `demogame.js` and `basicgame.js` for more examples.
 
 ## That's all!
 
