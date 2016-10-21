@@ -23,8 +23,7 @@
     delete global.me;
     delete global.here;
     delete global.info;
-    let dir;
-    for (dir of _directions) {
+    for (let dir of _directions) {
       delete global[dir];
     }
     db.getMongo().promptPrefix = _game.oldPromptPrefix;
@@ -59,8 +58,7 @@
 
   const _printInventory = () => {
     let inv = 'Current inventory:';
-    let it;
-    for (it in _player.items) {
+    for (let it in _player.items) {
       if (_player.items.hasOwnProperty(it)) {
         inv += '\n\t‣ ' + it + ' (' + _player.items[it].desc + ')';
       }
@@ -71,7 +69,7 @@
   const _printRoom = () => {
     let roomstr = 'Room: ' + _game.room.desc + '\n';
 
-    roomstr += '\nPaths:'
+    roomstr += '\nPaths:';
     for (let dir of _directions) {
       if (typeof _game.room[dir] === 'object') {
         roomstr += '\n\t' + (dir.length == 4 ? ' ': '');
@@ -79,7 +77,7 @@
       }
     }
     if (typeof _game.room.items === 'object') {
-      roomstr += '\nObjects:'
+      roomstr += '\nObjects:';
       for (let it in _game.room.items) {
         if (_game.room.items.hasOwnProperty(it)) {
           roomstr += '\n\t' + it + ': ' + _game.room.items[it].desc;
@@ -90,18 +88,19 @@
   };
 
   const _doEvent = (fn) => {
+    const oldRoom = _player.room;
     let result = fn(
       _player.hp,
       (hp) => {
-        _player.hp = hp
+        _player.hp = hp;
       },
       _player.items,
       (items) => {
-        _player.items = items
+        _player.items = items;
       },
       _game.room,
       (room) => {
-        _game.room = room
+        _game.room = room;
       },
       (didWin) => {
         if (didWin) {
@@ -109,21 +108,27 @@
         }
       }
     );
+    if (typeof result === 'undefined') {
+      result = '';
+    }
+    result = '' + result;
 
-    if (result.length > 0) {
+    const sameRoom = (_player.room == oldRoom);
+    const silent = (result.length == 0);
+    if (!silent) {
       result = '\n' + result + '\n' + _HR + '\n\n';
     }
     _game.col.save(_player);
     _game.col.save(_game.room);
 
-    return _checkPlayer(result, () => {
-      return _goto(_player.room)
-    });
+    return _checkPlayer(result, (function (shouldSkip) {
+      return _goto(_player.room, shouldSkip);
+    }).bind(null, sameRoom && silent));
   };
 
-  const _goto = (oid) => {
+  const _goto = (oid, skipEnter) => {
     let room = _game.col.findOne({
-      _id: oid
+      _id: oid,
     });
     if (!room) {
       return _softExit('🔥 Error: invalid room reference! ' +
@@ -132,7 +137,7 @@
     _game.room = room;
     _player.room = oid;
     _game.col.save(_player);
-    if (typeof _game.room.onEnter === 'object' &&
+    if (!skipEnter && typeof _game.room.onEnter === 'object' &&
       _game.room.onEnter.constructor == Code) {
         return _doEvent(_codeToFn(_game.room.onEnter));
     }
@@ -141,10 +146,10 @@
 
   const _homeRoom = () => {
     let h = _game.col.findOne({
-      isHome: true
+      isHome: true,
     });
     if (!h) {
-      return _softExit('🔥 Error: invalid game level -- no starting point.')
+      return _softExit('🔥 Error: invalid game level -- no starting point.');
     }
     return _goto(h._id);
   };
@@ -195,7 +200,7 @@
       action = _codeToFn(_player.items[item].use);
     }
     if (!action) {
-      return 'There\'s nothing to be done with that now. 😕'
+      return 'There\'s nothing to be done with that now. 😕';
     }
     return _doEvent(action);
   };
@@ -209,7 +214,7 @@
     'To view your current player info, type `me`.\n' +
     'To display the current room info, type `here`.\n\n' +
     'To repeat this message, type `info`.\n\n' +
-    'Have fun! 😜\n\n' + _HR + '\n';
+    'Have fun! 😜\n\n';
 
   let global = Function('return this')();
 
@@ -223,29 +228,29 @@
         dir,
         shellPrint: (function(d) {
           return go(d);
-        }).bind(null, dir)
+        }).bind(null, dir),
       };
     }
 
     global.inv = {
       shellPrint: () => {
         return _printInventory();
-      }
+      },
     };
     global.me = {
       shellPrint: () => {
         return _printPlayer();
-      }
+      },
     };
     global.here = {
       shellPrint: () => {
         return _printRoom();
-      }
+      },
     };
     global.info = {
       shellPrint: () => {
         return _intro;
-      }
+      },
     };
     _game.oldPromptPrefix = db.getMongo().promptPrefix;
     db.getMongo().promptPrefix = '\n' + _HR + 'MP🛡 ';
@@ -275,7 +280,7 @@
     if (colnames.indexOf(level) === -1) {
       // Only offer up collections that aren't save files.
       let good = colnames.filter((s) => {
-        return !s.startsWith('mongoplay.')
+        return !s.startsWith('mongoplay.');
       });
       return _usage + '🔥 Error: game <' + level + '> not found.' +
         '\nDid you mean any of ' + good.join(', ') + '?';
@@ -286,7 +291,7 @@
     if (colnames.indexOf(colname) !== -1) {
       play.overwrite = overwrite.bind(null, colname);
       return '⚠️ save file already exists!\n' +
-        'Run `play.overwrite()` to overwrite, or choose a new level.'
+        'Run `play.overwrite()` to overwrite, or choose a new level.';
     }
 
     // Hide warnings from copyTo.
@@ -300,7 +305,7 @@
 
     _setGlobals();
 
-    return _intro + _homeRoom();
+    return _intro + _HR + '\n' + _homeRoom();
   };
 
   play.load = (level, name) => {
@@ -322,7 +327,7 @@
     _game.col = db.getCollection(colname);
 
     let p = _game.col.findOne({
-      _id: _player._id
+      _id: _player._id,
     });
     if (!p) {
       _game.col.drop();
@@ -336,10 +341,10 @@
 
     _setGlobals();
 
-    return _intro + (_player.room ? _goto(_player.room) : _homeRoom());
+    return _goto(_player.room);
   };
 
   global.play = play;
-  print('\n⭐️ ⭐️ ⭐️  MONGO PLAY LOADED ⭐️ ⭐️ ⭐️')
-  print('Type `play(\'level\', \'name\')` to start!\n')
+  print('\n⭐️ ⭐️ ⭐️  MONGO PLAY LOADED ⭐️ ⭐️ ⭐️');
+  print('Type `play(\'level\', \'name\')` to start!\n');
 })();

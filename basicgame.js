@@ -27,6 +27,10 @@ let r1 = {
       }
     },
   },
+  onEnter: function (hp, setHp, items, setItems, room, setRoom, setVictory) {
+    // Test no-return functions.
+    setHp(2 * (~~(hp/2)));  // Make HP even.
+  },
 };
 
 let r2 = {
